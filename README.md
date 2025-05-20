@@ -4,7 +4,7 @@ A RESTful API built with PHP and MYSQL to provide easy interaction with the data
  
 
 
-## 🔗 Base URL
+# Base URL
 
  coming soon :)
 
