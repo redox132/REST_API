@@ -1,4 +1,4 @@
-# 📚 PHP REST API with SQLite
+# PHP REST API with SQLite
 
 This is a simple RESTful API built with **PHP** and **SQLite**. It allows basic CRUD (Create, Read, Update, Delete) operations on a generic  resource.
 
