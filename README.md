@@ -1,10 +1,9 @@
-# REST API ^_^
+# 📚 PHP REST API with SQLite
 
-A RESTful API built with PHP and MYSQL to provide easy interaction with the database. This will include all CRUD operations
- 
+This is a simple RESTful API built with **PHP** and **SQLite**. It allows basic CRUD (Create, Read, Update, Delete) operations on a generic  resource.
 
 
-# Base URL
+# FUTURE EMPROVEMNTS
 
- coming soon :)
+there will be added one generic url which will deal with all tables. this means you can pass a single uri but you will be able to query multiple tables
 
