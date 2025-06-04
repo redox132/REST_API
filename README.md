@@ -23,7 +23,7 @@ Note: i used curl thoughout the project testing. it's build in and used for quic
 
     $ curl -X POST http://localhost:8000/users \
      -H "Content-Type: application/json" \
-     -d '{"name": "amine", "email": "amine@gmail.com"}' // this will store a new record
+     -d '{"name": "name", "email": "name@example.com"}' // this will store a new record
 
     $ curl -X PATCH http://localhost:8000/users \
      -H "Content-Type: application/json" \
