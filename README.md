@@ -21,11 +21,15 @@ Note: i used curl thoughout the project testing. it's build in and used for quic
 
     $ curl http://localhost:8000/table/no_id // this will throw an error 404.
 
-    $ curl -X POST http://localhost:8000/table/users?"name=name&email=email@example.com" // this will store a new record
+    $ curl -X POST http://localhost:8000/users \
+     -H "Content-Type: application/json" \
+     -d '{"name": "amine", "email": "amine@gmail.com"}' // this will store a new record
 
-    $ curl -X PATCH http://localhost:8000/users/26?"name=name&email=name@example.com" // this will store a new record. the data to update and the values are received from $_GET super global. Yet, i could send the data along with the curl body as: curl -d "name=name&email=email@example.com", but i thought that one liners would be benefitial at the front end level. cuz they will not be able to send request thought curl or post man. but it will be For instance as an AJAX request. 
+    $ curl -X PATCH http://localhost:8000/users \
+     -H "Content-Type: application/json" \
+     -d '{"name": "yourName", "email": "yourName@example.com"}' // this will store a new record. the data to update and the values are received as an object and later converted to an array from the php:/input file. 
 
-    $ curl -X DELETE http://localhost:8000/users/26 // this will delete a resource. or a 404 response code if the delete resource was not found 
+    $ curl -X DELETE http://localhost:8000/users/26 // this will delete a resource. or a 404 response code if the delete resource was not found
 
 
 # Future Improvements

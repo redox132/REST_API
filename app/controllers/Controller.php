@@ -71,12 +71,13 @@ class Controller
 
     static public function delete(string $table, string $id)
     {
-        $res = Model::delete($table, $id);
-
-        if (empty($res)) {
-
+        
+        $fetchedId = Database::query("SELECT * FROM $table WHERE id = ?", [$id])->fetch();
+        
+        if (empty($fetchedId)) {
+            
             http_response_code(404);
-
+            
             echo json_encode([
                 'status' => '404',
                 'message' => "the ID: $id you are trying to delete does not exist"
@@ -84,6 +85,8 @@ class Controller
             
             exit;
         }
+        
+        Model::delete($table, $id);
 
         echo json_encode([
             'status' => '200',

@@ -16,7 +16,7 @@ class Model
         return Database::query("SELECT * FROM $table WHERE id = ?", [$id])->fetch();
     }
     
-    static public function store(string $table, $data) {
+    static public function store(string $table, array $data) {
         $columns = array_keys($data);
         $values = array_values($data);
         

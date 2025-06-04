@@ -18,7 +18,8 @@ class Router
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/");
         $table = explode("/", $uri)[0];
         $id = explode("/", $uri)[1] ?? null;
-        $data = $_GET;
+        $rawData = file_get_contents('php://input');
+        $data = json_decode($rawData, true) ?? [];
         
         if (!in_array($table, self::$allowedTables)) 
         {
