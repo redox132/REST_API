@@ -10,8 +10,25 @@ Features
     organized codebase with separation of concerns
     used PDO in case database changes, > 90 of code stays the same
     immune against sql injections
+    can PATCH data visa the query string. See bellow
 
- # Future Improvements
+#  docs
+Note: i used curl thoughout the project testing. it's build in and used for quicly getting statred. Yet, not the best choice.
+    
+    $ curl http://localhost:8000/users  // this will get all users. friendly Error, if no table exist or no data were returned from tha database or the table is empty
+
+    $ curl http://localhost:8000/no_table // this will throw an handled \Exception.
+
+    $ curl http://localhost:8000/table/no_id // this will throw an error 404.
+
+    $ curl -X POST http://localhost:8000/table/users?"name=name&email=email@example.com" // this will store a new record
+
+    $ curl -X PATCH http://localhost:8000/users/26?"name=name&email=name@example.com" // this will store a new record. the data to update and the values are received from $_GET super global. Yet, i could send the data along with the curl body as: curl -d "name=name&email=email@example.com", but i thought that one liners would be benefitial at the front end level. cuz they will not be able to send request thought curl or post man. but it will be For instance as an AJAX request. 
+
+    $ curl -X DELETE http://localhost:8000/users/26 // this will delete a resource. or a 404 response code if the delete resource was not found 
+
+
+# Future Improvements
 
 here are some planned or recommended future improvements:
 
