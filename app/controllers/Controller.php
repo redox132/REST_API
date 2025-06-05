@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Model;
 use App\Database\Database;
 use App\Helpers\Validator;
+use App\Controllers\Jwt\Jwt;
 
 class Controller
 {
@@ -69,8 +70,6 @@ class Controller
         $requiredFields = ['name', 'email', 'password'];
         $missing = Validator::validateRequired($data, $requiredFields);
 
-
-
         if (!empty($missing)) {
             http_response_code(400);
             echo json_encode([
@@ -96,6 +95,7 @@ class Controller
 
         // Optional: check if email already exists
         $existing = Database::query("SELECT * FROM $table WHERE email = ?", [$data['email']])->fetch();
+
         if ($existing) {
             http_response_code(409); // Conflict
             echo json_encode([
@@ -111,7 +111,7 @@ class Controller
         }
 
         // Store user
-        $res = Model::store($table, $data);
+        Model::store($table, $data);
 
         echo json_encode([
             'status' => '200',
@@ -121,7 +121,7 @@ class Controller
 
     static public function patch(string $table, array $data, string $id) 
     {
-        $res = Model::patch($table, $data, $id);
+        Model::patch($table, $data, $id);
 
         echo json_encode([
             'status' => '200',
@@ -150,36 +150,43 @@ class Controller
         ], JSON_PRETTY_PRINT);
     }
 
-    static public function login(array $data)
+    
+    static public function login( array $data) 
     {
-        $email = $data['email'] ?? null;
-        $password = $data['password'] ?? null;
 
-        if (!$email || !$password) {
-            http_response_code(400);
-            echo json_encode(['message' => 'Email and password are required']);
+        $user = Model::login($data);
+
+        if (!$user || empty($user)) {
+            http_response_code(404);
+            echo json_encode([
+                'status' => 404, 
+                'message' => "No data was found for the provided email: " . $data['email']
+            ], JSON_PRETTY_PRINT);
             exit;
         }
 
-        // Find user by email
-        $user = Database::query("SELECT * FROM users WHERE email = ?", [$email])->fetch();
 
-        if (!$user || !password_verify($password, $user['password'])) {
-            http_response_code(401);
-            echo json_encode(['message' => 'Invalid email or password']);
-            exit;
-        }
-
-        // Generate token
-        $token = \App\Controllers\Auth\JwtService::generateToken([
+        $token = Jwt::generateToken([
             'id' => $user['id'],
             'email' => $user['email']
         ]);
 
+        if (password_verify($data['password'], $user['password'])) {
+            http_response_code(200);
+            echo json_encode([
+                'status' => 200, 
+                "message" => "you have been logged in",
+                'token' => $token
+            ], JSON_PRETTY_PRINT);
+            exit;
+        }
+        
+        http_response_code(403);
         echo json_encode([
-            'status' => 'success',
-            'token' => $token
+            'status' => 403, 
+            "message" => "Invalid credentials"
         ], JSON_PRETTY_PRINT);
+
     }
 
 }

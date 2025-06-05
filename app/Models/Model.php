@@ -57,4 +57,9 @@ class Model
     {
         return Database::query("DELETE FROM $table WHERE id = ?", [$id])->fetch();
     }
+
+    static public function login(array $data) 
+    {
+        return Database::query("SELECT * FROM users WHERE email = ?", [$data['email']])->fetch();
+    }
 }

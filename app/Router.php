@@ -3,12 +3,13 @@
 namespace App;
 
 use App\Controllers\Controller;
+use App\Controllers\Jwt\Jwt;
 use App\Logger\Logger;
 
 class Router
 {
 
-    static private $allowedTables = ['users', 'products'];
+    static private $allowedTables = ['users', 'products', 'login'];
 
     static public function route()
     {
@@ -38,6 +39,30 @@ class Router
             $logger->warning('Blocked table access attempt', ['table' => $table]);
             throw new \Exception("Rida says the table does not exist");
         }
+
+        if ($uri == 'login' && $method == "POST") {
+            Controller::login($data);
+            die();
+        }
+
+        
+    // From request header
+    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+    $jwt = str_replace('Bearer ', '', $authHeader);
+
+    $payload = Jwt::verifyToken($jwt);
+
+    if (!$payload) {
+        http_response_code(401);
+        echo json_encode([
+            'status' => 403,
+            'message' => 'Unauthorized'
+        ], JSON_PRETTY_PRINT);
+        exit;
+    }
+
+
+
 
         try {
             switch($method) {
