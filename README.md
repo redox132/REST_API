@@ -35,12 +35,14 @@ Note: i used curl thoughout the project testing. it's build in and used for quic
 
     $ curl -X DELETE http://localhost:8000/users/26 // this will delete a resource. or a 404 response code if the delete resource was not found
 
-    $curl "http://localhost:8000/users/?email=name@example.com" // this will get a user based on the email.
+    $ curl "http://localhost:8000/users/?email=name@example.com" // this will get a user based on the email.
 
-    $curl curl "http://localhost:8000/users/?page=2&limit=1" // this willl get a set of results. if not set, page is 1 and limit is 10 by default. 
+    $ curl curl "http://localhost:8000/users/?page=2&limit=1" // this willl get a set of results. if not set, page is 1 and limit is 10 by default. 
 
-    curl -X GET http://localhost:8000/users \
+    $ curl -X GET http://localhost:8000/users \
     -H "Authorization: Bearer token" // this will throw an error, a pretty, beautifull error in a form of a json response. if the token is truthy, then the user will can procceed with the request.
+
+
 
     ** Note: ** all end point are protected. and only if you are signed, and have a valid token. then you can make a request.
 
