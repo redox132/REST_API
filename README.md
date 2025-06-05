@@ -6,13 +6,16 @@ Features
     lightweight, file-based SQLite database
     RESTful API structure (GET, POST, PUT, DELETE)
     jSON request and response format
-    errors and exceptions are always caught and retruned in json
+    errors and exceptions are always caught and retruned in json (this will provide clear errors for the caller)
     organized codebase with separation of concerns
-    used PDO in case database changes, > 90 of code stays the same
+    used PDO in case database changes, > 90 of code stays the same in case the database changes
     immune against sql injections
-    can PATCH data visa the query string. See bellow
+    logs all request in a log file
+    supports pagination and filtering (id or email)
+    supports cors for cross origin requests
 
-#  docs
+
+#  Docs
 Note: i used curl thoughout the project testing. it's build in and used for quicly getting statred. Yet, not the best choice.
     
     $ curl http://localhost:8000/users  // this will get all users. friendly Error, if no table exist or no data were returned from tha database or the table is empty
@@ -31,6 +34,10 @@ Note: i used curl thoughout the project testing. it's build in and used for quic
 
     $ curl -X DELETE http://localhost:8000/users/26 // this will delete a resource. or a 404 response code if the delete resource was not found
 
+    $curl "http://localhost:8000/users/?email=name@example.com" // this will get a user based on the email.
+
+    $curl curl "http://localhost:8000/users/?page=2&limit=1" // this willl get a set of results. if not set, page is 1 and limit is 10 by default. 
+
 
 # Future Improvements
 
@@ -45,18 +52,3 @@ here are some planned or recommended future improvements:
     - Input Validation & Sanitization
 
         Use middleware or helper functions to validate incoming data
-
-        Prevent SQL injection and XSS attacks
-
-    - CORS Support
-
-        Add proper headers to allow cross-origin requests if this API is accessed from a frontend app
-
-    - Logging & Monitoring
-
-        Implement logging for errors and request history (e.g., using Monolog)
-
-
-    - Pagination & Filtering
-
-        Support pagination, sorting, and filtering for list endpoints

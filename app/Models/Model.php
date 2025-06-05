@@ -6,14 +6,26 @@ use App\Database\Database;
 
 class Model
 {
-    static public function getAll(string $table)
+   static public function getAll(string $table, int $page = 1, int $limit = 10)
     {
-        return Database::query("SELECT * FROM $table")->fetchAll();
+        $offset = ($page - 1) * $limit;
+        $sql = "SELECT * FROM $table LIMIT :limit OFFSET :offset";
+
+        $stmt = Database::query($sql, [
+            ':limit' => $limit,
+            ':offset' => $offset
+        ])->fetchAll();
+        
+        return $stmt;
     }
 
-    static public function getOne(string $table, string $id)
+    static public function getOne(string $table, ?string $id, ?string $email = null)
     {
-        return Database::query("SELECT * FROM $table WHERE id = ?", [$id])->fetch();
+        if (isset($email)) {
+            return Database::query("SELECT * FROM $table WHERE email = ?", [$email])->fetch();
+        }else{
+            return Database::query("SELECT * FROM $table WHERE id = ?", [$id])->fetch();
+        }
     }
     
     static public function store(string $table, array $data) {
