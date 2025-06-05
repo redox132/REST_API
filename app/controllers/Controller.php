@@ -14,6 +14,7 @@ class Controller
         $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
 
         $res = Model::getAll($table, $page, $limit);
+        
 
         if (empty($res)) {
             http_response_code(404);
@@ -62,11 +63,13 @@ class Controller
         ], JSON_PRETTY_PRINT);
     }
 
-    static public function store(string $table, array $data) 
+    static public function store(string $table, array $data)  
     {
         // Basic required fields for demonstration
-        $requiredFields = ['name', 'email'];
+        $requiredFields = ['name', 'email', 'password'];
         $missing = Validator::validateRequired($data, $requiredFields);
+
+
 
         if (!empty($missing)) {
             http_response_code(400);
@@ -78,7 +81,7 @@ class Controller
             return;
         }
 
-        // Sanitize data
+        // Sanitize input
         $data = Validator::sanitizeArray($data);
 
         // Validate email
@@ -91,6 +94,23 @@ class Controller
             return;
         }
 
+        // Optional: check if email already exists
+        $existing = Database::query("SELECT * FROM $table WHERE email = ?", [$data['email']])->fetch();
+        if ($existing) {
+            http_response_code(409); // Conflict
+            echo json_encode([
+                'status' => '409',
+                'message' => 'Email already registered'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
+        // Hash password if provided
+        if (isset($data['password'])) {
+            $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+        }
+
+        // Store user
         $res = Model::store($table, $data);
 
         echo json_encode([
@@ -129,4 +149,37 @@ class Controller
             'Affected ID' => $id
         ], JSON_PRETTY_PRINT);
     }
+
+    static public function login(array $data)
+    {
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+
+        if (!$email || !$password) {
+            http_response_code(400);
+            echo json_encode(['message' => 'Email and password are required']);
+            exit;
+        }
+
+        // Find user by email
+        $user = Database::query("SELECT * FROM users WHERE email = ?", [$email])->fetch();
+
+        if (!$user || !password_verify($password, $user['password'])) {
+            http_response_code(401);
+            echo json_encode(['message' => 'Invalid email or password']);
+            exit;
+        }
+
+        // Generate token
+        $token = \App\Controllers\Auth\JwtService::generateToken([
+            'id' => $user['id'],
+            'email' => $user['email']
+        ]);
+
+        echo json_encode([
+            'status' => 'success',
+            'token' => $token
+        ], JSON_PRETTY_PRINT);
+    }
+
 }

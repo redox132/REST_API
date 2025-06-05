@@ -22,6 +22,7 @@ class Router
         $rawData = file_get_contents('php://input');
         $data = json_decode($rawData, true) ?? [];
         $email = $_GET['email'] ?? null;
+        
 
         // Log the request
         $logger->info('Incoming Request', [
