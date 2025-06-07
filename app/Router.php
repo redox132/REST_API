@@ -27,12 +27,13 @@ class Router
 
         // Log the request
         $logger->info('Incoming Request', [
+            'time' => $_SERVER['REQUEST_TIME'],
             'method' => $method,
             'uri' => $_SERVER['REQUEST_URI'],
             'table' => $table,
             'id' => $id,
             'email' => $email,
-            'body' => $data
+            'body' => $data,
         ]);
 
         if (!in_array($table, self::$allowedTables)) {
