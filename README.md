@@ -14,7 +14,8 @@ Features
     supports pagination and filtering (id or email)
     supports cors for cross origin requests
     supports JWT auth mecanism. On login, a user is assigned a unique token, and that token must be sent along with each request so the server can respond. 
-
+    Database is loosely implemented. This means i can use any db driver without refactoring the whole code
+    tests are also included
 
 #  Docs
 Note: i used curl thoughout the project testing. it's build in and used for quicly getting statred. Yet, not the best choice.
@@ -55,7 +56,6 @@ Note: i used curl thoughout the project testing. it's build in and used for quic
 
     - rate limiting
 
-    - 
 
 # Dear viewer
 

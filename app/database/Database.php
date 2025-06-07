@@ -1,45 +1,76 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Database;
+
+use Exception;
 use PDO;
-use throwable;
+use PDOStatement;
+use PDOException;
+use RuntimeException;
 
-class Database 
+
+
+interface DatabaseInterface
 {
+    public function connect(): PDO;
+    public function query(string $sql, array $params = []): PDOStatement;
+}
 
-    static private ?PDO $pdo = null;
 
-    public function __construct() 
+
+class Sqlite implements DatabaseInterface
+{
+    private ?PDO $pdo = null;
+
+    public function connect(): PDO
     {
-        if (self::$pdo == null) 
-        {
-            try 
-            {
-                self::$pdo = new PDO("sqlite:app/database/db.sqlite");
-                self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                self::$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            } catch (Throwable $th) {
-                throw $th;
+        if ($this->pdo === null) {
+            try {
+                $this->pdo = new PDO("sqlite:app/database/db.sqlite"); // Use forward slashes for portability
+                $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            } catch (PDOException $e) {
+                throw new RuntimeException("Database connection failed: " . $e->getMessage());
             }
         }
+
+        return $this->pdo;
     }
 
-    static public function connect() :PDO
+    public function query(string $sql, array $params = []): PDOStatement
     {
-        if (self::$pdo === null) 
-        {
-            new self();
+        if ($this->pdo === null) {
+            $this->connect();
         }
 
-        return self::$pdo;
-    }
-    
-    static public function query(string $sql, array $params = []) :\PDOStatement
-    {
-
-        $stmt = self::connect()->prepare($sql);
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;
-
     }
 }
+
+
+
+
+
+class Database
+{
+    private DatabaseInterface $db;
+
+    public function __construct(DatabaseInterface $db)
+    {
+        $this->db = $db;
+    }
+
+    public function query(string $sql, array $params = []): PDOStatement
+    {
+        if (empty($sql) || trim($sql) === '') {
+            throw new Exception("SQL query cannot be empty.");
+        }
+        return $this->db->query($sql, $params);
+    }
+}
+
+

@@ -108,7 +108,7 @@ class Router
             echo json_encode([
                 'status' => '500',
                 'message' => 'Internal server error'
-            ]);
+            ], JSON_PRETTY_PRINT);
         }
 
         return $id;
