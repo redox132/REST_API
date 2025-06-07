@@ -67,7 +67,7 @@ class Database
     public function query(string $sql, array $params = []): PDOStatement
     {
         if (empty($sql) || trim($sql) === '') {
-            throw new Exception("SQL query cannot be empty.");
+            throw new \InvalidArgumentException("SQL query cannot be empty.");
         }
         return $this->db->query($sql, $params);
     }

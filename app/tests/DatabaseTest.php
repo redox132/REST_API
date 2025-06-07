@@ -41,7 +41,7 @@ class DatabaseTest extends FrameworkTestCase
 
     public function testQueryWithEmptySql()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->db->query("");
     }
 
