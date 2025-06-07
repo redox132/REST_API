@@ -13,7 +13,7 @@ class Router
 
     static public function route()
     {
-        $logger = Logger::getLogger(); 
+        $logger = Logger::getLogger();
 
         $method = $_SERVER['REQUEST_METHOD'];
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/");
@@ -23,7 +23,7 @@ class Router
         $rawData = file_get_contents('php://input');
         $data = json_decode($rawData, true) ?? [];
         $email = $_GET['email'] ?? null;
-        
+
 
         // Log the request
         $logger->info('Incoming Request', [
@@ -36,6 +36,7 @@ class Router
         ]);
 
         if (!in_array($table, self::$allowedTables)) {
+            http_response_code(404);
             $logger->warning('Blocked table access attempt', ['table' => $table]);
             throw new \Exception("Rida says the table does not exist");
         }
@@ -45,27 +46,34 @@ class Router
             die();
         }
 
+
         
-    // From request header
-    $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-    $jwt = str_replace('Bearer ', '', $authHeader);
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        $jwt = str_replace('Bearer ', '', $authHeader);
 
-    $payload = Jwt::verifyToken($jwt);
+        $payload = Jwt::verifyToken($jwt);
 
-    if (!$payload) {
-        http_response_code(401);
-        echo json_encode([
-            'status' => 403,
-            'message' => 'Unauthorized'
-        ], JSON_PRETTY_PRINT);
-        exit;
-    }
+        // if (!$payload) {
+        //     http_response_code(401);
+        //     echo json_encode([
+        //         'status' => 401,
+        //         'message' => 'Unauthorized'
+        //     ], JSON_PRETTY_PRINT);
+        //     exit;
+        // }elseif ($payload && $table == 'users' && $method == "POST") {
+        //     http_response_code(403); 
+        //     echo json_encode([
+        //         'status' => 403,
+        //         'message' => 'Authenticated users cannot register new accounts.'
+        //     ], JSON_PRETTY_PRINT);
+        //     exit;
+        // }
 
 
 
 
         try {
-            switch($method) {
+            switch ($method) {
                 case "GET":
                     ($id || $email)
                         ? Controller::getOne($table, $id, $email)
@@ -104,5 +112,4 @@ class Router
 
         return $id;
     }
-
 }

@@ -70,6 +70,19 @@ class Controller
         $requiredFields = ['name', 'email', 'password'];
         $missing = Validator::validateRequired($data, $requiredFields);
 
+        $email = $data['email'] = isset($data['email']) ? $data['email'] : null;
+
+        $userEmail = Database::query("SELECT * FROM $table WHERE email = ?", [$email])->fetch();
+
+        if ($userEmail) {
+            http_response_code(409); 
+            echo json_encode([
+                'status' => '409',
+                'message' => 'Email already registered'
+            ], JSON_PRETTY_PRINT);
+            return;
+        }
+
         if (!empty($missing)) {
             http_response_code(400);
             echo json_encode([
